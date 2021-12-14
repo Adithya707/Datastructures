@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<malloc.h>
 #include<stdlib.h>
+#include<math.h>
  
 struct node {
     int n;
@@ -22,27 +23,37 @@ int FIND_NODE(struct node*);
 
  
 int count = 1,min = 10000,least;
+
+double cost = 2.0;
+int cnt = 2;
  
 struct node* MAKE_bin_HEAP() {
     struct node* np;
     np = NULL;
+    cnt++;
+    cost++;
     return np;
 }
  
 struct node * H = NULL;
 struct node *Hr = NULL;
+
  
 int bin_LINK(struct node* y, struct node* z) {
     y->parent = z;
     y->sibling = z->child;
     z->child = y;
     z->degree = z->degree + 1;
+    cost+=4;
+    cnt+=4;
 }
  
 struct node* CREATE_NODE(int k) {
     struct node* p;//new node;
     p = (struct node*) malloc(sizeof(struct node));
     p->n = k;
+    cnt++;
+    cost+=2;
     return p;
 }
  
@@ -52,30 +63,51 @@ struct node* bin_HEAP_UNION(struct node* H1, struct node* H2) {
     struct node* x;
     struct node* H = MAKE_bin_HEAP();
     H = bin_HEAP_MERGE(H1, H2);
-    if (H == NULL)
+    cost+=2;
+    cnt+=2;
+    if (H == NULL){
+        cost+=2;
+        cnt++;
         return H;
+     }   
     prev_x = NULL;
     x = H;
     next_x = x->sibling;
+    cost+=3;
+    cnt+=3;
     while (next_x != NULL) {
         if ((x->degree != next_x->degree) || ((next_x->sibling != NULL)
                 && (next_x->sibling)->degree == x->degree)) {
             prev_x = x;
             x = next_x;
+            cost+=10;
+            cnt+=4;
         } else {
             if (x->n <= next_x->n) {
                 x->sibling = next_x->sibling;
+                cost+=3;
+                cnt+=2;
                 bin_LINK(next_x, x);
             } else {
-                if (prev_x == NULL)
+                if (prev_x == NULL){
                     H = next_x;
-                else
+                    cost+=3;
+                    cnt+=2;
+                }    
+                else{
                     prev_x->sibling = next_x;
+                    cost++;
+                    cnt++;
+                }    
                 bin_LINK(x, next_x);
                 x = next_x;
+                cnt++;
+                cost++;
             }
         }
         next_x = x->sibling;
+        cnt++;
+        cost++;
     }
     return H;
 }
@@ -88,6 +120,8 @@ struct node* bin_HEAP_INSERT(struct node* H, struct node* x) {
     x->degree = 0;
     H1 = x;
     H = bin_HEAP_UNION(H, H1);
+    cnt+=6;
+    cost+=6;
     return H;
 }
  
@@ -99,27 +133,47 @@ struct node* bin_HEAP_MERGE(struct node* H1, struct node* H2) {
     struct node* b;
     y = H1;
     z = H2;
+    cost+=2;
+    cnt+=2;
     if (y != NULL) {
-        if (z != NULL && y->degree <= z->degree)
+        if (z != NULL && y->degree <= z->degree){
             H = y;
-        else if (z != NULL && y->degree > z->degree)
+            cost+=7;
+            cnt+=3;
+        }    
+        else if (z != NULL && y->degree > z->degree){
             /* need some modifications here;the first and the else conditions can be merged together!!!! */
             H = z;
-        else
+            cost==7;
+            cnt+=3;
+        }    
+        else{
             H = y;
-    } else
+            cost+=2;
+            cnt++;
+        }    
+    } else{
         H = z;
+        cost+=1;
+        cnt+=1;
+    }    
     while (y != NULL && z != NULL) {
         if (y->degree < z->degree) {
+            cost+=5;
+            cnt+=3;
             y = y->sibling;
         } else if (y->degree == z->degree) {
             a = y->sibling;
             y->sibling = z;
             y = a;
+            cost+=7;
+            cnt+=5;
         } else {
             b = z->sibling;
             z->sibling = y;
             z = b;
+            cost+=5;
+            cnt+=4;
         }
     }
     return H;
@@ -191,13 +245,15 @@ int main() {
         case 2:
               
                 a = FIND_NODE(H);
-                printf("The minimum element is %d \n",a);
+                printf("\nThe minimum element is %d \n",a);
                 min=10000;
                 DISPLAY(H);
          
                 
             break;
         case 3:
+            printf("Manual Armotized cost %lf \n",(cost/cnt));
+            printf("\n Theriotical cost %lf \n",log(n)/log(2));
             printf("\nTHANK U SIR\n");
             exit(0);
             break;
