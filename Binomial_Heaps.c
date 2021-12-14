@@ -180,28 +180,22 @@ int main() {
         scanf("%d", &l);
         switch (l) {
         case 1:
-            do {
                 printf("\nENTER THE ELEMENT TO BE INSERTED:");
                 scanf("%d", &m);
                 p = CREATE_NODE(m);
                 H = bin_HEAP_INSERT(H, p);
                 printf("\nNOW THE HEAP IS:\n");
                 DISPLAY(H);
-                printf("\nINSERT MORE(y/Y)= \n");
-                fflush(stdin);
-                scanf("%c", &ch);
-            } while (ch == 'Y' || ch == 'y');
+                
             break;
         case 2:
-              do {
+              
                 a = FIND_NODE(H);
                 printf("The minimum element is %d \n",a);
                 min=10000;
                 DISPLAY(H);
-                printf("\nFind Again(y/Y)= \n");
-                fflush(stdin);
-                scanf("%c", &ch);
-            } while (ch == 'Y' || ch == 'y');
+         
+                
             break;
         case 3:
             printf("\nTHANK U SIR\n");
